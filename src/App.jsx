@@ -13,7 +13,6 @@ import Login from './components/Login'
 import Signup from './components/Signup'
 import Chatbot from './components/Chatbot'
 
-
 const App = () => {
   return (
     <>

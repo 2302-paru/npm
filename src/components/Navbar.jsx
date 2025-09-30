@@ -14,7 +14,7 @@ const Navbar = () => {
   const xpProgress = (xp / maxXp) * 100;
 
   const navLinks = [
-    { path: '/', label: 'Home', icon: Home },
+    { path: '/home', label: 'Home', icon: Home },
     { path: '/lessons', label: 'Lessons', icon: Book },
     { path: '/leaderboard', label: 'Leaderboard', icon: Trophy },
     { path: '/resources', label: 'Resources', icon: Folder },
