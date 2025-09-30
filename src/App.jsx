@@ -11,6 +11,7 @@ import Leaderboard from './pages/Leaderboard'
 import Resources from './pages/Resources'
 import Login from './components/Login'
 import Signup from './components/Signup'
+import Chatbot from './components/Chatbot'
 
 
 const App = () => {
@@ -29,7 +30,9 @@ const App = () => {
           <Route path="/lessons" element={<Lessons />} />
           <Route path="/leaderboard" element={<Leaderboard />} />
           <Route path="/resources" element={<Resources />} />
+          <Route path="/chatbot" element={<Chatbot />} />
         </Routes>
+        <Chatbot/>
       </BrowserRouter>
     </>
   )
