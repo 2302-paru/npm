@@ -1,12 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { Menu, X, Trophy, Zap, Star, Book, Users, Home, User, Folder } from 'lucide-react';
+import React, { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { Menu, X, Trophy, Zap, Star, Book, Home, User, Folder } from 'lucide-react';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [xp, setXp] = useState(2450);
   const [level, setLevel] = useState(7);
   const [streak, setStreak] = useState(12);
-  const [activeLink, setActiveLink] = useState('/');
+  const location = useLocation();
+  const activeLink = location.pathname;
 
   const maxXp = level * 500;
   const xpProgress = (xp / maxXp) * 100;
@@ -19,8 +21,7 @@ const Navbar = () => {
     { path: '/profile', label: 'Profile', icon: User }
   ];
 
-  const handleLinkClick = (path) => {
-    setActiveLink(path);
+  const handleLinkClick = () => {
     setIsOpen(false);
     // Simulate XP gain on navigation
     setXp(prev => {
@@ -54,9 +55,10 @@ const Navbar = () => {
               const Icon = link.icon;
               const isActive = activeLink === link.path;
               return (
-                <button
+                <Link
                   key={link.path}
-                  onClick={() => handleLinkClick(link.path)}
+                  to={link.path}
+                  onClick={handleLinkClick}
                   className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-200 ${
                     isActive
                       ? 'bg-white text-indigo-600 shadow-lg transform scale-105'
@@ -65,7 +67,7 @@ const Navbar = () => {
                 >
                   <Icon className="h-4 w-4" />
                   <span className="font-medium">{link.label}</span>
-                </button>
+                </Link>
               );
             })}
           </div>
@@ -138,9 +140,10 @@ const Navbar = () => {
               const Icon = link.icon;
               const isActive = activeLink === link.path;
               return (
-                <button
+                <Link
                   key={link.path}
-                  onClick={() => handleLinkClick(link.path)}
+                  to={link.path}
+                  onClick={handleLinkClick}
                   className={`flex items-center space-x-3 w-full px-3 py-3 rounded-lg transition-all ${
                     isActive
                       ? 'bg-white text-indigo-600 shadow-lg'
@@ -150,7 +153,7 @@ const Navbar = () => {
                   <Icon className="h-5 w-5" />
                   <span className="font-medium">{link.label}</span>
                   {isActive && <Zap className="h-4 w-4 ml-auto text-yellow-500 fill-current" />}
-                </button>
+                </Link>
               );
             })}
           </div>
