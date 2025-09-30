@@ -1,72 +1,72 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
-import { Briefcase, Shield, BookOpen, User } from "lucide-react";
-import { motion } from "framer-motion";
-import Navbar from "../components/Navbar";
-
-const resourcesData = [
-  {
-    id: 1,
-    label: "HR",
-    icon: User,
-    description: "Access HR guides, policies, and best practices.",
-    path: "/resources/hr",
-  },
-  {
-    id: 2,
-    label: "Technical",
-    icon: BookOpen,
-    description: "Technical resources, tutorials, and cheat sheets.",
-    path: "/resources/technical",
-  },
-  {
-    id: 3,
-    label: "Safety",
-    icon: Shield,
-    description: "Safety measures, protocols, and compliance info.",
-    path: "/resources/safety",
-  },
-  {
-    id: 4,
-    label: "Business",
-    icon: Briefcase,
-    description: "Business strategies, case studies, and reports.",
-    path: "/resources/business",
-  },
-];
+import React, { useEffect, useState } from "react";
 
 const Resources = () => {
-  const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+  const [videos, setVideos] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const userId = localStorage.getItem("userId");
+
+  useEffect(() => {
+    if (!userId) return alert("No userId found. Please login first.");
+
+    const fetchData = async () => {
+      try {
+        // 1️⃣ Get user info
+        const resUser = await fetch(
+          `http://localhost:5000/api/users/${userId}`
+        );
+        const userData = await resUser.json();
+        setUser(userData);
+
+        // 2️⃣ Get videos based on interests
+        let url = "http://localhost:5000/api/videos";
+        if (userData.role === "mentee" && userData.interests.length > 0) {
+          const query = userData.interests.join(",");
+          url += `?interests=${query}`;
+        }
+
+        const resVideos = await fetch(url);
+        const videosData = await resVideos.json();
+        setVideos(videosData);
+      } catch (err) {
+        console.error("Error fetching resources:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [userId]);
+
+  if (loading) return <div>Loading...</div>;
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col">
-      <Navbar />
-      <h1 className="text-4xl font-bold text-center mt-8 mb-4">Resources</h1>
-      <p className="text-center text-gray-400 mb-8">
-        Choose a category to explore learning materials
-      </p>
+    <div className="min-h-screen bg-black text-white p-4">
+      <h1 className="text-3xl font-bold mb-6">
+        {user?.role === "mentee" ? "Recommended for you" : "All Resources"}
+      </h1>
 
-      <div className="flex flex-wrap justify-center gap-6 px-4">
-        {resourcesData.map((resource) => {
-          const Icon = resource.icon;
-          return (
-            <motion.div
-              key={resource.id}
-              onClick={() => navigate(resource.path)}
-              whileHover={{ scale: 1.05 }}
-              className="bg-gray-900 border border-white rounded-xl shadow-lg p-6 w-72 sm:w-80 cursor-pointer transition"
-            >
-              <div className="flex items-center gap-3 mb-3">
-                <div className="bg-gray-700 p-3 rounded-lg">
-                  <Icon className="h-6 w-6 text-white" />
-                </div>
-                <h3 className="text-xl font-bold">{resource.label}</h3>
-              </div>
-              <p className="text-gray-400">{resource.description}</p>
-            </motion.div>
-          );
-        })}
-      </div>
+      {videos.length === 0 ? (
+        <p>No videos available.</p>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          {videos.map((video) => (
+            <div key={video._id} className="bg-gray-900 p-2 rounded-lg">
+              <h2 className="font-semibold mb-2">{video.title}</h2>
+              <iframe
+                width="100%"
+                height="200"
+                src={video.url}
+                title={video.title}
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

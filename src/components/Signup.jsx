@@ -32,7 +32,10 @@ const Signup = () => {
     e.preventDefault();
     try {
       const res = await signup(formData);
+
+      // Save both token and user _id
       localStorage.setItem("token", res.data.token);
+      localStorage.setItem("userId", res.data.user._id); // use _id here
 
       if (res.data.user.role === "mentor") {
         navigate("/mentor-dashboard");

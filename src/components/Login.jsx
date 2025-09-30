@@ -19,7 +19,9 @@ const Login = () => {
     e.preventDefault();
     try {
       const res = await login(formData);
+
       localStorage.setItem("token", res.data.token);
+      localStorage.setItem("userId", res.data.user._id); // use _id here
 
       if (res.data.user.role === "mentor") {
         navigate("/mentor-dashboard");

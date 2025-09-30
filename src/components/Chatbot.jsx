@@ -1,17 +1,20 @@
 import React, { useState } from "react";
 
-function Chatbot  ()  {
+function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
-    // Default intro messages
-    { role: "bot", text: "Hi! 👋 I’ll keep my replies short. How can I help?" },
+    {
+      role: "bot",
+      text: "Hi! 👋 I’m your HR Career Assistant. How can I help you today?",
+    },
   ]);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
 
-  // 🔑 Your API key
-  const GEMINI_API_KEY = "AIzaSyBQ570UFGrBDfnPEDX-MkD3gShfGRAOauo";
-  const MODEL_NAME = "models/gemini-2.5-flash";
+  // 🔑 Hardcoded Groq API Key (⚠️ visible in frontend bundle!)
+  const GROQ_API_KEY =
+    "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";
+  const MODEL_NAME = "llama-3.1-8b-instant"; // HR bot model choice
 
   const handleSend = async () => {
     if (!input.trim()) return;
@@ -23,44 +26,63 @@ function Chatbot  ()  {
 
     try {
       const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/${MODEL_NAME}:generateContent?key=${GEMINI_API_KEY}`,
+        "https://api.groq.com/openai/v1/chat/completions",
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            Authorization: `Bearer ${GROQ_API_KEY}`,
+            "Content-Type": "application/json",
+          },
           body: JSON.stringify({
-            contents: [{ parts: [{ text: input }] }],
+            model: MODEL_NAME,
+            messages: [
+              {
+                role: "system",
+                content:
+                  "You are an HR EdTech Career Assistant for Gen Z learners. " +
+                  "Your job is to provide short, friendly, and practical advice on career paths, " +
+                  "micro-learning, daily engagement, unconventional careers, and mentorship. " +
+                  "Keep answers engaging, motivating, and easy to understand.",
+              },
+              ...messages
+                .filter((m) => m.role === "user")
+                .map((m) => ({ role: "user", content: m.text })),
+              { role: "user", content: input },
+            ],
+            temperature: 0.7,
           }),
         }
       );
 
       const data = await response.json();
-      console.log("API Response:", data);
+      console.log("Groq API Response:", data);
+
+      if (data.error) throw new Error(data.error.message);
 
       const botReply =
-        data?.candidates?.[0]?.content?.parts?.[0]?.text ||
-        "Sorry, I didn’t get that.";
+        data?.choices?.[0]?.message?.content || "Sorry, I didn’t get that.";
 
-      const shortReply = botReply.split(".").slice(0, 1).join(".") + ".";
+      // Keep replies short → first 2 sentences
+      const shortReply = botReply.split(".").slice(0, 2).join(".") + ".";
 
       setTimeout(() => {
         setMessages((prev) => [...prev, { role: "bot", text: shortReply }]);
         setIsTyping(false);
-      }, 1200);
+      }, 1000);
     } catch (error) {
       console.error("Error fetching response:", error);
       setMessages((prev) => [
         ...prev,
-        { role: "bot", text: "⚠️ Error occurred while fetching response." },
+        { role: "bot", text: `⚠️ Error: ${error.message}` },
       ]);
       setIsTyping(false);
     }
   };
 
-  // When chatbot opens, insert the default Q/A
+  // Default Q/A when chatbot opens
   const handleOpenChat = () => {
     setIsOpen(true);
 
-    // Add default Q/A if not already added
     setMessages((prev) => {
       const hasDefaultQA = prev.some(
         (msg) => msg.text === "What is this app about?"
@@ -70,14 +92,17 @@ function Chatbot  ()  {
       return [
         ...prev,
         { role: "user", text: "What is this app about?" },
-        { role: "bot", text: "This is a learning platform for young minds." },
+        {
+          role: "bot",
+          text: "I’m your HR Career Assistant 🤝. This platform helps Gen Z learners explore modern career paths with micro-learning, AI-curated content, gamified engagement, and mentor support.",
+        },
       ];
     });
   };
 
   return (
     <div className="fixed bottom-4 right-4 z-[9999]">
-      {/* Chatbot Toggle Button */}
+      {/* Toggle Button */}
       <button
         onClick={() => (isOpen ? setIsOpen(false) : handleOpenChat())}
         className="w-14 h-14 bg-orange-500 rounded-full shadow-lg flex items-center justify-center hover:bg-orange-600 transition"
@@ -91,14 +116,14 @@ function Chatbot  ()  {
           className="w-80 h-96 bg-white text-black rounded-lg shadow-2xl flex flex-col"
           style={{
             position: "fixed",
-            bottom: "80px", // above the button
+            bottom: "80px",
             right: "16px",
             zIndex: 9999,
           }}
         >
           {/* Header */}
           <div className="bg-orange-500 text-white p-3 rounded-t-lg flex justify-between items-center">
-            <span className="font-bold">CodeQuest Chatbot</span>
+            <span className="font-bold">CodeQuest HR Bot</span>
             <button onClick={() => setIsOpen(false)}>✖️</button>
           </div>
 
@@ -133,7 +158,7 @@ function Chatbot  ()  {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSend()}
-              placeholder="Ask me anything..."
+              placeholder="Ask me about careers..."
               className="flex-1 border rounded px-2 py-1 text-sm focus:outline-none"
             />
             <button
@@ -147,6 +172,6 @@ function Chatbot  ()  {
       )}
     </div>
   );
-};
+}
 
 export default Chatbot;
