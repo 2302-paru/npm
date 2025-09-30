@@ -48,21 +48,20 @@ const Signup = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-black px-4">
-      <h1 className="text-3xl sm:text-4xl font-bold text-white mb-6">
-        Sign Up
-      </h1>
+    <div className="min-h-screen flex items-center justify-center bg-black px-4">
       <form
         onSubmit={handleSubmit}
         className="w-full max-w-sm bg-gray-900 p-6 sm:p-8 rounded-2xl shadow-lg flex flex-col gap-4"
       >
+        <h1 className="text-3xl font-bold text-white text-center mb-4">Sign Up</h1>
+
         <input
           type="text"
           name="name"
           value={formData.name}
           onChange={handleInputChange}
           placeholder="Name"
-          className="w-full p-2 sm:p-3 rounded-lg bg-gray-800 border border-gray-700 text-white"
+          className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 text-white"
           required
         />
         <input
@@ -71,7 +70,7 @@ const Signup = () => {
           value={formData.email}
           onChange={handleInputChange}
           placeholder="Email"
-          className="w-full p-2 sm:p-3 rounded-lg bg-gray-800 border border-gray-700 text-white"
+          className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 text-white"
           required
         />
         <input
@@ -80,7 +79,7 @@ const Signup = () => {
           value={formData.password}
           onChange={handleInputChange}
           placeholder="Password"
-          className="w-full p-2 sm:p-3 rounded-lg bg-gray-800 border border-gray-700 text-white"
+          className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 text-white"
           required
         />
 
@@ -88,7 +87,7 @@ const Signup = () => {
           name="role"
           value={formData.role}
           onChange={handleInputChange}
-          className="w-full p-2 sm:p-3 rounded-lg bg-gray-800 border border-gray-700 text-white"
+          className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 text-white"
         >
           <option value="mentee">Mentee</option>
           <option value="mentor">Mentor</option>
@@ -104,7 +103,7 @@ const Signup = () => {
                 <div
                   key={interest}
                   onClick={() => handleInterestClick(interest)}
-                  className={`p-2 sm:p-3 text-center rounded-lg cursor-pointer border ${
+                  className={`p-2 text-center rounded-lg cursor-pointer border ${
                     formData.interests.includes(interest)
                       ? "bg-gray-700 text-white"
                       : "bg-gray-800 text-gray-300"
@@ -119,7 +118,7 @@ const Signup = () => {
 
         <button
           type="submit"
-          className="w-full p-2 sm:p-3 bg-white rounded-lg text-black font-bold"
+          className="w-full p-3 bg-white text-black font-bold rounded-lg hover:bg-gray-200 transition"
         >
           Sign Up
         </button>

@@ -1,24 +1,71 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import confetti from "canvas-confetti";
 import Navbar from "../components/Navbar";
-import { data } from "./data";
 
 const Quiz = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const topic = queryParams.get("topic");
 
-  const questions = data[topic] || [];
+  const [questions, setQuestions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const [index, setIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState(null);
   const [isCorrect, setIsCorrect] = useState(null);
 
-  if (!topic || questions.length === 0) {
+  useEffect(() => {
+    if (!topic) return;
+
+    const fetchQuestions = async () => {
+      try {
+        setLoading(true);
+        const res = await fetch(
+          `https://your-api.com/quiz?topic=${topic}&limit=5`
+        );
+        if (!res.ok) throw new Error("Failed to fetch quiz data");
+        const data = await res.json();
+        setQuestions(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchQuestions();
+  }, [topic]);
+
+  if (!topic) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-black text-white text-xl">
         Invalid or missing topic. Please go back and select a quiz.
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-black text-white text-xl">
+        Loading questions...
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-black text-white text-xl">
+        Error: {error}
+      </div>
+    );
+  }
+
+  if (questions.length === 0) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-black text-white text-xl">
+        No questions found for this topic.
       </div>
     );
   }

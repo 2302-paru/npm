@@ -34,12 +34,13 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-black px-4">
-      <h1 className="text-4xl font-bold text-white mb-8">Login</h1>
+    <div className="min-h-screen flex items-center justify-center bg-black px-4">
       <form
         onSubmit={handleSubmit}
         className="w-full max-w-md bg-gray-900 p-8 rounded-2xl shadow-lg flex flex-col gap-6"
       >
+        <h1 className="text-3xl font-bold text-white text-center mb-4">Login</h1>
+
         <input
           type="email"
           name="email"
@@ -67,9 +68,10 @@ const Login = () => {
           <option value="mentee">Mentee</option>
           <option value="mentor">Mentor</option>
         </select>
+
         <button
           type="submit"
-          className="w-full p-3 bg-white rounded-lg text-black font-bold"
+          className="w-full p-3 bg-white text-black font-bold rounded-lg hover:bg-gray-200 transition"
         >
           Login
         </button>
